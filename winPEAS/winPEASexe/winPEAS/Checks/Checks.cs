@@ -8,6 +8,7 @@ using winPEAS.Helpers;
 using winPEAS.Helpers.AppLocker;
 using winPEAS.Helpers.Registry;
 using winPEAS.Helpers.Search;
+using winPEAS.Helpers.YamlConfig;
 using winPEAS.Info.UserInfo;
 
 namespace winPEAS.Checks
@@ -35,18 +36,19 @@ namespace winPEAS.Checks
         public static string PaintDisabledUsersNoAdministrator = "";
         //static string paint_lockoutUsers = "";
         public static string PaintAdminUsers = "";
+        public static YamlConfig YamlConfig;
 
         private static List<SystemCheck> _systemChecks;
         private static readonly HashSet<string> _systemCheckSelectedKeysHashSet = new HashSet<string>();
 
         // github url for Linpeas.sh
-        public static string LinpeasUrl = "https://raw.githubusercontent.com/carlospolop/privilege-escalation-awesome-scripts-suite/master/linPEAS/linpeas.sh";
+        public static string LinpeasUrl = "https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh";
 
-        public const string LogFile = "out.txt";
+        public const string DefaultLogFile = "out.txt";
 
 
         class SystemCheck
-        {           
+        {
             public string Key { get; }
             public ISystemCheck Check { get; }
 
@@ -78,6 +80,7 @@ namespace winPEAS.Checks
                 new SystemCheck("windowscreds", new WindowsCreds()),
                 new SystemCheck("browserinfo", new BrowserInfo()),
                 new SystemCheck("filesinfo", new FilesInfo()),
+                new SystemCheck("fileanalysis", new FileAnalysis())
             };
 
             var systemCheckAllKeys = new HashSet<string>(_systemChecks.Select(i => i.Key));
@@ -93,20 +96,34 @@ namespace winPEAS.Checks
                     return;
                 }
 
-                if (string.Equals(arg, "log", StringComparison.CurrentCultureIgnoreCase))
+                if (arg.StartsWith("log", StringComparison.CurrentCultureIgnoreCase))
                 {
+                    // get logfile argument if present
+                    string logFile = DefaultLogFile;
+                    var parts = arg.Split('=');
+                    if (parts.Length == 2)
+                    {
+                        logFile = parts[1];
+
+                        if (string.IsNullOrWhiteSpace(logFile))
+                        {
+                            Beaprint.PrintException("Please specify a valid log file.");
+                            return;
+                        }
+                    }
+
                     try
                     {
-                        fileStream = new FileStream(LogFile, FileMode.OpenOrCreate, FileAccess.Write);
+                        fileStream = new FileStream(logFile, FileMode.OpenOrCreate, FileAccess.Write);
                         fileWriter = new StreamWriter(fileStream);
                     }
                     catch (Exception ex)
                     {
-                        Beaprint.PrintException($"Cannot open \"{LogFile}\" for writing:\n {ex.Message}");
+                        Beaprint.PrintException($"Cannot open \"{logFile}\" for writing:\n {ex.Message}");
                         return;
                     }
 
-                    Beaprint.ColorPrint($"\"log\" argument present, redirecting output to file \"{LogFile}\"", Beaprint.ansi_color_good);
+                    Beaprint.ColorPrint($"\"log\" argument present, redirecting output to file \"{logFile}\"", Beaprint.ansi_color_good);
                     Console.SetOut(fileWriter);
                 }
 
@@ -188,6 +205,8 @@ namespace winPEAS.Checks
 
                     RunChecks(isAllChecks, wait);
 
+                    SearchHelper.CleanLists();
+
                     Beaprint.PrintMarketingBanner();
                 }, IsDebug, "Total time");
 
@@ -225,9 +244,20 @@ namespace winPEAS.Checks
 
         private static void CreateDynamicLists()
         {
+            Beaprint.GrayPrint("   Creating Dynamic lists, this could take a while, please wait...");
+
             try
             {
-                Beaprint.GrayPrint("   Creating Dynamic lists, this could take a while, please wait...");
+                Beaprint.GrayPrint("   - Loading YAML definitions file...");
+                YamlConfig = YamlConfigHelper.GetWindowsSearchConfig();
+            }
+            catch (Exception ex)
+            {
+                Beaprint.GrayPrint("Error while getting AD info: " + ex);
+            }
+
+            try
+            {
                 Beaprint.GrayPrint("   - Checking if domain...");
                 CurrentAdDomainName = DomainHelper.IsDomainJoined();
                 IsPartOfDomain = !string.IsNullOrEmpty(CurrentAdDomainName);
@@ -241,7 +271,7 @@ namespace winPEAS.Checks
             try
             {
                 Beaprint.GrayPrint("   - Getting Win32_UserAccount info...");
-                
+
                 // by default only enumerate local users
                 SelectQuery query = new SelectQuery("Win32_UserAccount", "LocalAccount=true");
                 if (IsDomainEnumeration)

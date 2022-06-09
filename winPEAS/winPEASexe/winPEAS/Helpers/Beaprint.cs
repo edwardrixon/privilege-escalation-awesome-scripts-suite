@@ -17,7 +17,7 @@ namespace winPEAS.Helpers
         static string LYELLOW = "\x1b[1;33m";
         static string BLUE = "\x1b[34m";
         public static string LBLUE = "\x1b[1;34m";
-        static string MAGENTA = "\x1b[1:35m";
+        static string MAGENTA = "\x1b[1;35m";
         //static string LMAGENTA = "\x1b[1;35m";
         static string CYAN = "\x1b[36m";
         static string LCYAN = "\x1b[1;36m";
@@ -31,49 +31,48 @@ namespace winPEAS.Helpers
         public static string ansi_users_disabled = BLUE;
         public static string ansi_current_user = MAGENTA;
 
-        private static string Advisory = 
+        private static string Advisory =
             "winpeas should be used for authorized penetration testing and/or educational purposes only." +
             "Any misuse of this software will not be the responsibility of the author or of any other collaborator. " +
             "Use it at your own networks and/or with the network owner's permission.";
 
-        private static string Version = "v2.0-beta";
+        private static string Version = "ng";
 
         /////////////////////////////////
         /////////  PRINT THINGS /////////
         /////////////////////////////////
         public static void PrintBanner()
         {
-                Console.WriteLine(BLUE + string.Format(@"     
-             {0}*((,.,/((((((((((((((((((((/,  */               
-      {0},/*,..*((((((((((((((((((((((((((((((((((,           
-    {0},*/((((((((((((((((((/,  .*//((//**, .*(((((((*       
-    {0}(((((((((((((((({2}**********/{1}########## {0}.(* ,(((((((   
-    {0}(((((((((((/{2}********************/{1}####### {0}.(. (((((((
-    {0}((((((..{2}******************{3}/@@@@@/{2}***/{1}###### {0}./(((((((
-    {0},,....{2}********************{3}@@@@@@@@@@{2}(***,{1}#### {0}.//((((((
-    {0}, ,..{2}********************{3}/@@@@@%@@@@{2}/********{1}##{0}((/ /((((
-    {0}..(({1}###########{2}*********{3}/%@@@@@@@@@{2}/************{0},,..((((
-    {0}.({1}##################(/{2}******{3}/@@@@@{2}/***************{0}.. /((
-    {0}.({1}#########################(/{2}**********************{0}..*((
-    {0}.({1}##############################(/{2}*****************{0}.,(((
-    {0}.({1}###################################(/{2}************{0}..(((
-    {0}.({1}#######################################({2}*********{0}..(((
-    {0}.({1}#######(,.***.,(###################(..***.{2}*******{0}..(((
-    {0}.({1}#######*(#####((##################((######/({2}*****{0}..(((
-    {0}.({1}###################(/***********(##############({0}...(((
-    {0}.(({1}#####################/*******(################{0}.((((((
-    {0}.((({1}############################################{0}(..((((
-    {0}..((({1}##########################################{0}(..(((((
-    {0}....(({1}########################################{0}( .(((((
-    {0}......(({1}####################################{0}( .((((((
-    {0}((((((((({1}#################################{0}(../((((((
-        {0}(((((((((/{1}##########################{0}(/..((((((
-              {0}(((((((((/,.  ,*//////*,. ./(((((((((((((((.
-                 {0}(((((((((((((((((((((((((((((/", LGREEN, GREEN, BLUE, NOCOLOR) + NOCOLOR);
+            Console.WriteLine(BLUE + string.Format(@"     
+               {0}((((((((((((((((((((((((((((((((
+        {0}(((((((((((((((((((((((((((((((((((((((((((
+      {0}(((((((((((((({2}**********/{1}##########{0}.((((((((((((   
+    {0}(((((((((((/{2}********************/{1}#######{0}.((((((((((
+    {0}(((((((.{2}******************{3}/@@@@@/{0}{2}****{1}######{0}.(((((((((
+    {0}(((((.{2}********************{3}@@@@@@@@@@/{0}{2}***,{1}####{0}.(((((((((
+    {0}((((.{2}********************{3}/@@@@@%@@@@{0}{2}/********{1}##{0}(((((((((
+    {0}.(({1}############{2}*********{3}/%@@@@@@@@@{0}{2}/************{0}.(((((((
+    {0}.({1}##################(/{2}******{3}/@@@@@{0}{2}/***************{0}.(((((
+    {0}.({1}#########################(/{2}**********************{0}.((((
+    {0}.({1}##############################(/{2}*****************{0}.((((
+    {0}.({1}###################################(/{2}************{0}.((((
+    {0}.({1}#######################################({2}*********{0}.((((
+    {0}.({1}#######(,.***.,(###################(..***.{2}*******{0}.((((
+    {0}.({1}#######*(#####((##################((######/({2}*****{0}.((((
+    {0}.({1}###################(/***********(##############({0}).((((
+    {0}.(({1}#####################/*******(################{0})((((((
+    {0}.((({1}############################################{0}).(((((
+    {0}..((({1}##########################################{0}).((((((
+    {0}....(({1}########################################{0}).((((((
+    {0}......(({1}####################################{0}).(((((((
+    {0}((((((((({1}#################################{0}).((((((((
+        {0}(((((((((/{1}##########################{0}).((((((((
+              {0}((((((((((((((((((((((((((((((((((((((
+                 {0}((((((((((((((((((((((((((((((", LGREEN, GREEN, BLUE, NOCOLOR) + NOCOLOR);
 
-                Console.WriteLine();
-                Console.WriteLine(LYELLOW + "ADVISORY: " + BLUE + Advisory);
-                Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine(LYELLOW + "ADVISORY: " + BLUE + Advisory);
+            Console.WriteLine();
         }
 
         public static void PrintMarketingBanner()
@@ -85,8 +84,9 @@ namespace winPEAS.Helpers
        /---------------------------------------------------------------------------\
        |                             {1}Do you like PEASS?{0}                            |
        |---------------------------------------------------------------------------| 
-       |         {3}Become a Patreon{0}    :     {2}https://www.patreon.com/peass{0}           |
+       |         {3}Get latest WinPEAS{0}  :     {2}https://github.com/sponsors/carlospolop{0} |
        |         {3}Follow on Twitter{0}   :     {2}@carlospolopm{0}                           |
+       |         {3}Respect on HTB{0}      :     {2}SirBroccoli & makikvues{0}                 |
        |---------------------------------------------------------------------------|
        |                                 {1}Thank you!{0}                                |
        \---------------------------------------------------------------------------/
@@ -101,13 +101,13 @@ namespace winPEAS.Helpers
                 PrintBanner();
             }
 
-            Console.WriteLine(YELLOW + "  WinPEAS " + GREEN + Version + NOCOLOR + YELLOW + " by @carlospolopm, makikvues(makikvues2[at]gmail[dot]com)" + NOCOLOR);
+            Console.WriteLine(YELLOW + "  WinPEAS" + GREEN + Version + NOCOLOR + YELLOW + " by @carlospolopm, makikvues(makikvues2[at]gmail[dot]com)" + NOCOLOR);
 
             PrintMarketingBanner();
 
             PrintLegend();
             Console.WriteLine();
-            LinkPrint("https://book.hacktricks.xyz/windows/checklist-windows-privilege-escalation", "You can find a Windows local PE Checklist here:");
+            LinkPrint("https://book.hacktricks.xyz/windows-hardening/checklist-windows-privilege-escalation", "You can find a Windows local PE Checklist here:");
         }
 
         static void PrintLegend()
@@ -135,17 +135,18 @@ namespace winPEAS.Helpers
             Console.WriteLine(LBLUE + "        networkinfo" + GRAY + "          Search network information" + NOCOLOR);
             Console.WriteLine(LBLUE + "        windowscreds" + GRAY + "         Search windows credentials" + NOCOLOR);
             Console.WriteLine(LBLUE + "        browserinfo" + GRAY + "          Search browser information" + NOCOLOR);
-            Console.WriteLine(LBLUE + "        filesinfo" + GRAY + "            Search files that can contains credentials" + NOCOLOR);
+            Console.WriteLine(LBLUE + "        filesinfo" + GRAY + "            Search generic files that can contains credentials" + NOCOLOR);
+            Console.WriteLine(LBLUE + "        fileanalysis" + GRAY + "         Search specific files that can contains credentials" + NOCOLOR);
             Console.WriteLine(LBLUE + "        eventsinfo" + GRAY + "           Display interesting events information" + NOCOLOR);
             Console.WriteLine(LBLUE + "        wait" + GRAY + "                 Wait for user input between checks" + NOCOLOR);
             Console.WriteLine(LBLUE + "        debug" + GRAY + "                Display debugging information - memory usage, method execution time" + NOCOLOR);
-            Console.WriteLine(LBLUE + "        log" + GRAY +$"                  Log all output to file \"{Checks.Checks.LogFile}\"" + NOCOLOR);
+            Console.WriteLine(LBLUE + "        log[=logfile]" + GRAY + $"        Log all output to file defined as logfile, or to \"{Checks.Checks.DefaultLogFile}\" if not specified" + NOCOLOR);
             Console.WriteLine();
             Console.WriteLine(LCYAN + "        Additional checks (slower):");
             Console.WriteLine(LBLUE + "        -lolbas" + GRAY + $"              Run additional LOLBAS check" + NOCOLOR);
             Console.WriteLine(LBLUE + "        -linpeas=[url]" + GRAY + $"       Run additional linpeas.sh check for default WSL distribution, optionally provide custom linpeas.sh URL\n" +
                                      $"                             (default: {Checks.Checks.LinpeasUrl})" + NOCOLOR);
-            
+
         }
 
 
@@ -154,27 +155,37 @@ namespace winPEAS.Helpers
         /////////////////////////////////
         public static void GreatPrint(string toPrint)
         {
+            // print_title
 
             Console.WriteLine();
             Console.WriteLine();
             int halfTotal = 60;
-            Console.WriteLine(LCYAN + "  " + new String('=', halfTotal - toPrint.Length) + "(" + NOCOLOR + YELLOW + toPrint + LCYAN + ")" + new String('=', halfTotal - toPrint.Length) + NOCOLOR);
+            //Console.WriteLine(LCYAN + "  " + new String('=', halfTotal - toPrint.Length) + "(" + NOCOLOR + YELLOW + toPrint + LCYAN + ")" + new String('=', halfTotal - toPrint.Length) + NOCOLOR);
+
+            Console.WriteLine($"{LCYAN}════════════════════════════════════╣ {GREEN}{toPrint}{LCYAN} ╠════════════════════════════════════{NOCOLOR}");
         }
 
         public static void MainPrint(string toPrint)
         {
+            // print_2title
+
             Console.WriteLine();
-            Console.WriteLine(YELLOW + "  [+] " + GREEN + toPrint + NOCOLOR);
+            //Console.WriteLine(YELLOW + "  [+] " + GREEN + toPrint + NOCOLOR);
+            Console.WriteLine($"{LCYAN}╔══════════╣ {GREEN}{toPrint}{NOCOLOR}");
         }
 
         public static void LinkPrint(string link, string comment = "")
         {
-            Console.WriteLine(YELLOW + "   [?] " + LBLUE + comment + " " + LYELLOW + link + NOCOLOR);
+            // print_info
+            //Console.WriteLine(YELLOW + "   [?] " + LBLUE + comment + " " + LYELLOW + link + NOCOLOR);            
+            Console.WriteLine($"{LCYAN}╚ {LBLUE}{comment} {LYELLOW}{link}{NOCOLOR}");
         }
 
         public static void InfoPrint(string toPrint)
         {
-            Console.WriteLine(YELLOW + "    [i] " + LBLUE + toPrint + NOCOLOR);
+            // print_info
+            //Console.WriteLine(YELLOW + "    [i] " + LBLUE + toPrint + NOCOLOR);
+            Console.WriteLine($"{LCYAN}╚ {LBLUE}{toPrint}{NOCOLOR}");
         }
 
         public static void NotFoundPrint()
@@ -204,7 +215,7 @@ namespace winPEAS.Helpers
 
         internal static void PrintDebugLine(string log)
         {
-            Console.WriteLine(YELLOW + "  [Debug]  " + log  + NOCOLOR);
+            Console.WriteLine(YELLOW + "  [Debug]  " + log + NOCOLOR);
             Console.WriteLine();
         }
 
@@ -217,7 +228,7 @@ namespace winPEAS.Helpers
         public static void PrintException(string message)
         {
             GrayPrint($"  [X] Exception: {message}");
-        }        
+        }
 
         public static void AnsiPrint(string to_print, Dictionary<string, string> ansi_colors_regexp)
         {
@@ -361,6 +372,7 @@ namespace winPEAS.Helpers
                 foreach (string elem in list_to_print)
                 {
                     Console.WriteLine("    " + elem);
+                    // printf ${BLUE}"═╣ "$GREEN"$1"$NC #There is 1 "═"
                 }
             }
             else

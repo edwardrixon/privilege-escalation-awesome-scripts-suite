@@ -10,21 +10,22 @@ namespace winPEAS.Helpers.Search
 {
     static class SearchHelper
     {
-        public static List<CustomFileInfo> RootDirUsers;
-        private static List<CustomFileInfo> RootDirCurrentUser;
-        public static List<CustomFileInfo> ProgramFiles;
-        public static List<CustomFileInfo> ProgramFilesX86;
-        public static List<CustomFileInfo> DocumentsAndSettings;
-        private static List<CustomFileInfo> GroupPolicyHistory;
+        public static List<CustomFileInfo> RootDirUsers = new List<CustomFileInfo>();
+        public static List<CustomFileInfo> RootDirCurrentUser = new List<CustomFileInfo>();
+        public static List<CustomFileInfo> ProgramFiles = new List<CustomFileInfo>();
+        public static List<CustomFileInfo> ProgramFilesX86 = new List<CustomFileInfo>();
+        public static List<CustomFileInfo> DocumentsAndSettings = new List<CustomFileInfo>();
+        public static List<CustomFileInfo> GroupPolicyHistory = new List<CustomFileInfo>();
 
-        private static string SystemDrive = Environment.GetEnvironmentVariable("SystemDrive");
+        public static string SystemDrive = Environment.GetEnvironmentVariable("SystemDrive");
         private static string GlobalPattern = "*";
 
         public static List<CustomFileInfo> GetFilesFast(string folder, string pattern = "*", HashSet<string> excludedDirs = null, bool isFoldersIncluded = false)
         {
             ConcurrentBag<CustomFileInfo> files = new ConcurrentBag<CustomFileInfo>();
-            IEnumerable<DirectoryInfo> startDirs = GetStartDirectories(folder, files, pattern);
+            IEnumerable<DirectoryInfo> startDirs = GetStartDirectories(folder, files, pattern, isFoldersIncluded);
             IList<DirectoryInfo> startDirsExcluded = new List<DirectoryInfo>();
+            IList<string> known_dirs = new List<string>();
 
             if (excludedDirs != null)
             {
@@ -51,9 +52,18 @@ namespace winPEAS.Helpers.Search
                 Parallel.ForEach(GetStartDirectories(d.FullName, files, pattern, isFoldersIncluded), (dir) =>
                 {
                     GetFiles(dir.FullName, pattern).ForEach(
-                        (f) =>
-                            files.Add(new CustomFileInfo(f.Name, f.Extension, f.FullName))
-                        );
+                        (f) => {
+                            CustomFileInfo file_info = new CustomFileInfo(f.Name, f.Extension, f.FullName, false);
+                            files.Add(file_info);
+                            
+                            CustomFileInfo file_dir = new CustomFileInfo(f.Directory.Name, "", f.Directory.FullName, true);
+                            if (!known_dirs.Contains(file_dir.FullPath))
+                            {
+                                known_dirs.Add(file_dir.FullPath);
+                                files.Add(file_dir);
+                            }
+                            }
+                        ) ;
                 });
             });
 
@@ -132,13 +142,13 @@ namespace winPEAS.Helpers.Search
                     {
                         foreach (var directory in directories)
                         {
-                            files.Add(new CustomFileInfo(null, null, directory.FullName));
+                            files.Add(new CustomFileInfo(directory.Name, null, directory.FullName, true));
                         }
                     }
 
                     foreach (var f in dirInfo.GetFiles(pattern))
                     {
-                        files.Add(new CustomFileInfo(f.Name, f.Extension, f.FullName));
+                        files.Add(new CustomFileInfo(f.Name, f.Extension, f.FullName, false));
                     }
 
                     if (directories.Length > 1) return new List<DirectoryInfo>(directories);
@@ -175,29 +185,28 @@ namespace winPEAS.Helpers.Search
 
             // c:\users\current_user
             string rootCurrentUserSearchPath = Environment.GetEnvironmentVariable("USERPROFILE");
-            SearchHelper.RootDirCurrentUser = SearchHelper.GetFilesFast(rootCurrentUserSearchPath, GlobalPattern);
+            SearchHelper.RootDirCurrentUser = SearchHelper.GetFilesFast(rootCurrentUserSearchPath, GlobalPattern, isFoldersIncluded: true);
 
             // c:\Program Files\
             string rootProgramFiles = $"{SystemDrive}\\Program Files\\";
-            SearchHelper.ProgramFiles = SearchHelper.GetFilesFast(rootProgramFiles, GlobalPattern);
+            SearchHelper.ProgramFiles = SearchHelper.GetFilesFast(rootProgramFiles, GlobalPattern, isFoldersIncluded: true);
 
             // c:\Program Files (x86)\
             string rootProgramFilesX86 = $"{SystemDrive}\\Program Files (x86)\\";
-            SearchHelper.ProgramFilesX86 = SearchHelper.GetFilesFast(rootProgramFilesX86, GlobalPattern);
+            SearchHelper.ProgramFilesX86 = SearchHelper.GetFilesFast(rootProgramFilesX86, GlobalPattern, isFoldersIncluded: true);
 
             // c:\Documents and Settings\
             string documentsAndSettings = $"{SystemDrive}\\Documents and Settings\\";
-            SearchHelper.DocumentsAndSettings = SearchHelper.GetFilesFast(documentsAndSettings, GlobalPattern);
+            SearchHelper.DocumentsAndSettings = SearchHelper.GetFilesFast(documentsAndSettings, GlobalPattern, isFoldersIncluded: true);
 
             // c:\ProgramData\Microsoft\Group Policy\History
             string groupPolicyHistory = $"{SystemDrive}\\ProgramData\\Microsoft\\Group Policy\\History";
-            SearchHelper.GroupPolicyHistory = SearchHelper.GetFilesFast(groupPolicyHistory, GlobalPattern);
+            SearchHelper.GroupPolicyHistory = SearchHelper.GetFilesFast(groupPolicyHistory, GlobalPattern, isFoldersIncluded: true);
 
             // c:\Documents and Settings\All Users\Application Data\\Microsoft\\Group Policy\\History
             string groupPolicyHistoryLegacy = $"{documentsAndSettings}\\All Users\\Application Data\\Microsoft\\Group Policy\\History";
             //SearchHelper.GroupPolicyHistoryLegacy = SearchHelper.GetFilesFast(groupPolicyHistoryLegacy, globalPattern);
-            var groupPolicyHistoryLegacyFiles = SearchHelper.GetFilesFast(groupPolicyHistoryLegacy, GlobalPattern);
-
+            var groupPolicyHistoryLegacyFiles = SearchHelper.GetFilesFast(groupPolicyHistoryLegacy, GlobalPattern, isFoldersIncluded: true);
             SearchHelper.GroupPolicyHistory.AddRange(groupPolicyHistoryLegacyFiles);
         }
 
